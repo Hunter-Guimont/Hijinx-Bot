@@ -4,6 +4,7 @@ import datetime
 import time
 import config
 import asyncpg
+import psutil
 
 
 class Tools(commands.Cog):
@@ -11,6 +12,7 @@ class Tools(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.process = psutil.Process()
 
     @commands.command(case_insensitive=True)
     async def ping(self, ctx):
@@ -55,7 +57,10 @@ class Tools(commands.Cog):
         conn = await asyncpg.connect(**config.connection)
         players, guilds = list(await conn.fetchrow('SELECT COUNT(id) FROM players'))[0], len(self.bot.guilds)
         await conn.close()
+        memory_usage = self.process.memory_full_info().uss / 1024 ** 2
+        cpu_usage = self.process.cpu_percent() / psutil.cpu_count()
         await ctx.send(f"Currently there are {players} players on the island from {guilds} different servers!")
+        await ctx.send(f"Memory Usage: {round(memory_usage, 1)}mb. CPU Usage: {int(cpu_usage)}%.")
 
 
 def setup(bot):
