@@ -1,9 +1,8 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
 from cogs.player import Player
 import config
 import asyncpg
-import time
 import aiohttp
 import datetime
 
@@ -13,11 +12,15 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*prefixes)(bot, message)
 
 
-initial_extensions = ['cogs.tools',
+initial_extensions = ['cogs.stats',
                       'cogs.greed',
-                      'cogs.owner']
+                      'cogs.admin']
 
-bot = commands.Bot(command_prefix=get_prefix)
+bot = commands.Bot(command_prefix=get_prefix, owner_id=222800179697287168)
+
+
+bot.start_time = datetime.datetime.now()
+
 
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -26,7 +29,6 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    bot.start_time = datetime.datetime.now()
     bot.session = aiohttp.ClientSession()
     print(f'{bot.user.name} - {bot.user.id}\nTotal Guilds: {len(bot.guilds)}\nTotal users: {len(set(bot.get_all_members()))}')
 
