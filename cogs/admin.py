@@ -1,17 +1,17 @@
-from discord.ext import commands
 import asyncio
-import traceback
-import discord
-import inspect
-import textwrap
-from contextlib import redirect_stdout
-import io
 import copy
+import inspect
+import io
+import textwrap
+import traceback
+from contextlib import redirect_stdout
 from typing import Union
 
+import discord
+from discord.ext import commands
+
+
 # to expose to the eval command
-import datetime
-from collections import Counter
 
 
 class Admin(commands.Cog):
@@ -22,7 +22,8 @@ class Admin(commands.Cog):
         self._last_result = None
         self.sessions = set()
 
-    def cleanup_code(self, content):
+    @staticmethod
+    def cleanup_code(content):
         """Automatically removes code blocks from the code."""
         # remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
@@ -34,7 +35,8 @@ class Admin(commands.Cog):
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
 
-    def get_syntax_error(self, e):
+    @staticmethod
+    def get_syntax_error(e):
         if e.text is None:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
@@ -62,6 +64,8 @@ class Admin(commands.Cog):
     @commands.command(name='reload', hidden=True)
     async def _reload(self, ctx, *, module):
         """Reloads a module."""
+        if not module.startswith('cogs.'):
+            module = 'cogs.' + module
         try:
             self.bot.reload_extension(module)
         except commands.ExtensionError as e:
@@ -212,8 +216,11 @@ class Admin(commands.Cog):
         msg.author = who
         msg.content = ctx.prefix + command
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
-        new_ctx._db = ctx._db
+        new_ctx._db = ctx._d
         await self.bot.invoke(new_ctx)
+
+    def is_author(self, m):
+        return m.author == self.bot.user
 
 
 def setup(bot):

@@ -1,26 +1,25 @@
-import discord
-from discord.ext import commands
-from cogs.player import Player
-import config
-import asyncpg
-import aiohttp
 import datetime
 
+import discord
+from discord.ext import commands
 
-def get_prefix(bot, message):
-    prefixes = ['g! ', 'G! ', 'greed ']
-    return commands.when_mentioned_or(*prefixes)(bot, message)
+import config
 
 
-initial_extensions = ['cogs.stats',
-                      'cogs.greed',
-                      'cogs.admin']
+def get_prefix(bot_, message):
+    prefixes = ['*', 'h!']
+    return commands.when_mentioned_or(*prefixes)(bot_, message)
+
 
 bot = commands.Bot(command_prefix=get_prefix, owner_id=222800179697287168)
 
-
-bot.start_time = datetime.datetime.now()
-
+initial_extensions = ['cogs.stats',
+                      'cogs.admin',
+                      # 'cogs.pokemon',
+                      'cogs.api',
+                      'cogs.fun',
+                      # 'cogs.help',
+                      'cogs.handler']
 
 if __name__ == '__main__':
     for extension in initial_extensions:
@@ -29,20 +28,14 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    bot.session = aiohttp.ClientSession()
-    print(f'{bot.user.name} - {bot.user.id}\nTotal Guilds: {len(bot.guilds)}\nTotal users: {len(set(bot.get_all_members()))}')
-
-
-@bot.event
-async def on_message(m):
-    if m.author.bot:
-        return
-    if m.content.startswith(tuple(await bot.get_prefix(m))):
-        conn = await asyncpg.connect(**config.connection)
-        await conn.execute(f"INSERT INTO players (id, money, book) VALUES ({m.author.id}, 0, '[]') ON CONFLICT (id) DO NOTHING")
-        bot.player = Player(*list(await conn.fetchrow(f"SELECT * FROM players WHERE id = {m.author.id}")))
-        await conn.close()
-    await bot.process_commands(m)
+    bot.start_time = datetime.datetime.now()
+    activity = discord.Activity(name="*help and h!help.", type=discord.ActivityType.listening)
+    await bot.change_presence(activity=activity)
+    print(
+        f'{bot.user.name} - {bot.user.id}\n'
+        f'Total Guilds: {len(bot.guilds)}\n'
+        f'Total users: {len(set(bot.get_all_members()))}'
+    )
 
 
 bot.run(config.token, bot=True, reconnect=True)
