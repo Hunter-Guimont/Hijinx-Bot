@@ -28,7 +28,6 @@ class APICommands(commands.Cog):
 
     async def fetch(self, base, params=None) -> typing.Dict:
         async with self.session.get(f'https://{base}', params=params) as r:
-            print(r.url)
             if r.status == 200:
                 return await r.json()
             elif r.status == 400:
