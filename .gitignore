@@ -115,3 +115,7 @@ dmypy.json
 config.py
 *.xml
 *.iml
+
+# Other
+.vscode
+.cogs/Data/config
