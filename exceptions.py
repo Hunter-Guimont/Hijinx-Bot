@@ -8,3 +8,4 @@ class ForbiddenError(Exception):
 
 class NotFoundError(Exception):
     """The requested resource could not be found but may be available in the future."""
+
