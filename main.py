@@ -29,6 +29,7 @@ initial_extensions = [
     'cogs.WebSearches',
     'cogs.MusicPlayer',
     'cogs.Entertainment',
+    'cods.Management',
     'cogs.ErrorHandler'
 ]
 
