@@ -6,7 +6,8 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 from typing import Union
-
+import math
+import numpy
 import discord
 from discord.ext import commands
 
@@ -41,7 +42,7 @@ class Admin(commands.Cog):
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def load(self, ctx, *, module):
         """Loads a module."""
         try:
@@ -51,7 +52,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(f'`{module} loaded`')
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def unload(self, ctx, *, module):
         """Unloads a module."""
         try:
@@ -61,7 +62,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(f'`{module} unloaded`')
 
-    @commands.command(name='reload', hidden=True)
+    @commands.command(name='reload', )
     async def _reload(self, ctx, *, module):
         """Reloads a module."""
         if not module.startswith('cogs.'):
@@ -73,7 +74,7 @@ class Admin(commands.Cog):
         else:
             await ctx.send(f'`{module} reloaded`')
 
-    @commands.command(pass_context=True, hidden=True, name='eval')
+    @commands.command(pass_context=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates a code"""
 
@@ -120,7 +121,7 @@ class Admin(commands.Cog):
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(pass_context=True)
     async def repl(self, ctx):
         """Launches an interactive REPL session."""
         variables = {
@@ -209,19 +210,43 @@ class Admin(commands.Cog):
             except discord.HTTPException as e:
                 await ctx.send(f'Unexpected error: `{e}`')
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def sudo(self, ctx, who: Union[discord.Member, discord.User], *, command: str):
         """Run a command as another user."""
         msg = copy.copy(ctx.message)
         msg.author = who
         msg.content = ctx.prefix + command
         new_ctx = await self.bot.get_context(msg, cls=type(ctx))
-        new_ctx._db = ctx._d
         await self.bot.invoke(new_ctx)
 
     def is_author(self, m):
         return m.author == self.bot.user
 
+    @commands.command()
+    async def source(self, ctx, *, command):
+        '''See the source code for any command.'''
+        sourcecode = str(inspect.getsource(self.bot.get_command(command).callback))
+        sourcecode = sourcecode.replace('`', r'\`')
+        if len(sourcecode) > 2000:
+            split = math.ceil(len(sourcecode)/1800)
+            lines = sourcecode.splitlines()
+
+            partions = numpy.array_split(numpy.array(lines), split)
+            for partion in partions:
+                await ctx.send('```python\n' + '\n'.join(partion) + '```')
+
+        await ctx.send('```python\n' + sourcecode + '```')
+
+    @commands.command()
+    async def clean(self, ctx, limit: int, user: discord.Member = None):
+
+        user = user or self.bot.user
+
+        def is_me(m):
+            return m.author == user
+
+        deleted = await ctx.channel.purge(limit=limit, check=is_me)
+        await ctx.send(f"Deleted {len(deleted)} of {user}'s message(s)")
 
 def setup(bot):
     bot.add_cog(Admin(bot))
