@@ -203,7 +203,7 @@ class InformationCommands(commands.Cog, name='Information'):
         await self.minimal_embed(
             ctx,
             name=person.display_name,
-            image=person.avatar_url
+            image=person.avatar_url_as(static_format="png")
         )
 
     @commands.group(aliases=['guild'], invoke_without_command=True)
