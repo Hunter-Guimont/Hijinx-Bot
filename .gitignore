@@ -119,3 +119,4 @@ config.py
 # Other
 .vscode
 .cogs/Data/config
+..gitignore
