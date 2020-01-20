@@ -1,0 +1,4 @@
+
+.vscode/settings.json
+*.pyc
+cogs/Data/config.json
