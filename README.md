@@ -1,4 +1,4 @@
-## Hijinx Future Development Plan
+## Hijinx Future Development Plan (2020-01-20)
 ---
 ### Moderation Commands (Admin-only):
 
