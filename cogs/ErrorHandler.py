@@ -4,7 +4,7 @@ import traceback
 import discord
 from discord.ext import commands
 
-from exceptions import *
+from utils.exceptions import *
 
 
 class CommandErrorHandler(commands.Cog):
