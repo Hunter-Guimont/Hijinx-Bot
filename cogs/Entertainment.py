@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 
 class FunCommands(commands.Cog, name='Fun'):
-    """Random commands provided for your amusement."""
+    """Random commands provided for your entertainment."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -26,7 +26,7 @@ class FunCommands(commands.Cog, name='Fun'):
     @commands.command(name='rps', aliases=['jajanken'])
     async def rock_paper_scissors(self, ctx, choice):
         """Rock, Paper, Scissors but with 5,050 possible outcomes."""
-        choices = self.load_json('./cogs/Data/rps101.json')
+        choices = self.load_json('./cogs/Data/RockPaperScissors.json')
         if choice not in choices:
             return
         opponent = ran.choice(list(choices))
@@ -43,12 +43,14 @@ class FunCommands(commands.Cog, name='Fun'):
     @commands.command(name='8ball', aliases=['eightball'])
     async def eight_ball(self, ctx, *, question: commands.clean_content):
         """Magic 8 Ball for fortune-telling or seeking advice."""
-        choices = self.load_json('./cogs/Data/eightball.json')
+        choices = self.load_json('./cogs/Data/Magic8Ball.json')
         if not question[-1] == '?':
             question += '?'
         answer = choices[f'{ran.choice(list(choices))}']
-        await ctx.send(f'*"{question.capitalize()}"* - '
-                       f'{ctx.author.mention}. *{answer}*')
+        await ctx.send(
+            f'*"{question.capitalize()}"* - '
+            f'{ctx.author.mention}. *{answer}*'
+        )
 
     @commands.command(name='choose')
     async def random_choice(self, ctx, *, args: commands.clean_content):

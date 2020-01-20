@@ -71,7 +71,7 @@ async def on_member_join(user):
     channel = user.guild.system_channel
     if commands.bot_has_permissions(send_message=False):
         return
-    with open('./cogs/fun/greetings.json') as f:
+    with open('./cogs/fun/JoinMessages.json') as f:
         d = json.load(f)
 
     greeting = random.choice(list(d.values()))
