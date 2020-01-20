@@ -54,7 +54,8 @@ class Music(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
+    async def join(self, ctx, *, channel: discord.VoiceChannel = None):
+        channel == ctx.author.voice.channel
 
         if ctx.voice_client is not None:
             return await ctx.voice_client.move_to(channel)
@@ -77,6 +78,7 @@ class Music(commands.Cog):
 
         await ctx.voice_client.disconnect()
 
+    @join.before_invoke
     @play.before_invoke
     async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
@@ -84,8 +86,7 @@ class Music(commands.Cog):
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.send("You are not in a voice channel.")
-                raise commands.CommandError(
-                    "Author not connected to a voice channel.")
+                raise commands.CommandError( "Author not connected to a voice channel.")
         elif ctx.voice_client.is_playing():
             ctx.voice_client.stop()
 
