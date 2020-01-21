@@ -1,5 +1,4 @@
 
 .vscode/
 *.pyc
-cogs/Data/config.json
 *.ini
