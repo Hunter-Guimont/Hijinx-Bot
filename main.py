@@ -78,4 +78,4 @@ async def on_member_join(user):
     if channel is not None:
         await channel.send(f"*{greeting.replace('{user}', f'**{user}**')}*")
 
-bot.run(bot.config['token'], bot=True, reconnect=True)
+bot.run(bot.config['token'])
