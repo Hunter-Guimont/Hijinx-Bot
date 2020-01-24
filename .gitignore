@@ -1,6 +1,3 @@
-
-.vscode/
 *.pyc
 *.ini
-.cogs/Data/config.json
 cogs/Data/config.json
